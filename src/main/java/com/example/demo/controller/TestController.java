@@ -1,5 +1,10 @@
 package com.example.demo.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.repository.support.Repositories;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -7,7 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.ResponseDTO;
 import com.example.demo.dto.TestRequestBodyDTO;
+
+import lombok.Builder;
 
 @RestController
 @RequestMapping("test") // 리소스
@@ -41,4 +49,28 @@ public class TestController {
 		return "RequestBody ID : " + testRequestBodyDTO.getId() + 
 				" Message : " + testRequestBodyDTO.getMessage();
 	}
+	
+	// ResponseDTO를 반환하는 컨트롤러 메서드
+	@GetMapping("/testResponseBody")
+	public ResponseDTO<String> testControllerResponseBody(){
+		List<String> list = new ArrayList<>();
+		list.add("Hello, ResponseDTO here");
+		ResponseDTO<String> response = ResponseDTO.<String>builder().data(list).build();
+		 
+		return  response;
+	}
+	
+	// ResponseEntity : HTTP 응답의 바디, 다른 매개변수들을 조작하고 싶을 때 사용
+	@GetMapping("/testResponseEntity")
+	public ResponseEntity<?> testControllerResponseEntity(){
+		List<String> list = new ArrayList<>();
+		list.add("Hello, this is reponseEntity");
+		ResponseDTO<String> response = ResponseDTO.<String>builder().data(list).build();
+		// http status 400으로 설정
+		//return ResponseEntity.badRequest().body(response);
+		//ok 응답
+		return ResponseEntity.ok().body(response);
+	}
+	
+
 }
