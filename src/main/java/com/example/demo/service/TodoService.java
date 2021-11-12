@@ -36,6 +36,7 @@ public class TodoService {
 		//save
 		repository.save(entity);
 		
+		log.info("=============================================");
 		log.info("Entity Id : {} is saved", entity.getId());
 		
 		//find user by id
@@ -43,6 +44,7 @@ public class TodoService {
 	}
 	
 	public List<TodoEntity> retrieve(final String userId){
+	log.info("=============================================");
 		log.info("Entity Id : {} is retrieved", userId);
 		
 		return repository.findByUserId(userId);
@@ -62,19 +64,40 @@ public class TodoService {
 			
 			// 4. 데이터베이스에 새 값을 저장한다.
 			repository.save(todo);
-		});
+		}); 
 		 
 		return retrieve(entity.getUserId());
+	}
+	
+	public List<TodoEntity> delete(final TodoEntity entity){
+		validate(entity);
+		
+		try{
+		repository.delete(entity);
+		}catch (Exception e) {
+			// 예외 발생 시 id와 exception을 로깅한다.
+			log.info("=============================================");
+			log.error("error deleting entity", entity.getId(), e);
+			// 컨트롤러로 exception을 보낸다. 데이터베이스 내부 로직을 캡슐화하려면 e를 리턴하지 않고 새 exception 오브젝트를 리턴한다.
+			throw new RuntimeException("error deleting entity " + entity.getId());
+		}
+		log.info("=============================================");
+		log.info("Entity Id : {} is deleted", entity.getId());
+		
+		// 새 Todo 리스트를 가져와 리턴한다.
+		return retrieve(entity.getUserId()); 
 	}
 	
 	//리팩토링한 메서드
 	private void validate(final TodoEntity entity) {
 		if(entity == null) {
+		log.info("=============================================");
 			log.warn("Entity cannot be null.");
 			throw new RuntimeException("Entity cannot be null.");
 		}
 		
 		if(entity.getUserId() == null) {
+			log.info("=============================================");
 			log.warn("Unknown user.");
 			throw new RuntimeException("Unkown user.");
 		}
