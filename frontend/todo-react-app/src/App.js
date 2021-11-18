@@ -9,8 +9,8 @@ class App extends React.Component{
     super(props);
     this.state = {
       items: [
-        { id: "0", title : "Hello World 1", done: true},
-        { id: "1", title : "Hello World 2", done: false},
+        // { id: "0", title : "Hello World 1", done: true},
+        // { id: "1", title : "Hello World 2", done: false},
       ]  
     };
   }
@@ -24,17 +24,49 @@ class App extends React.Component{
     this.setState({ items: thisItems}); // 업데이트는 반드시 this.setState로 해야됨
     console.log("items : ", this.state.items);
   }
+  delete = (item) => {
+    console.log("Before delete items : ", this.state.items);
+    const thisItems = this.state.items;
+    const newItems = thisItems.filter(e => e.id !== item.id);
+    this.setState({ items: newItems}, () => {
+      // 디버깅 콜백
+      console.log("Update Items : ", this.state.items)
+    }); 
+  }
+
+  componentDidMount(){
+    const requestOptions = {
+      method : "GET",
+      headers:{ "Content-Type": "application/json"}
+    };
+
+    fetch("http://localhost:8080/todo", requestOptions)
+    .then((response) => response.json())
+    .then(
+      (response) => {
+        this.setState({
+          items: response.data
+        });
+      },
+      (error) => {
+        this.setState({
+          error
+        });
+      }
+    );
+  }
 
   render(){
     var todoItems = this.state.items.length > 0 && (
       <Paper style={{ margin: 16}}>
         <List>
           {this.state.items.map((item, idx) => (
-            <Todo item={item} key={item.id}/>
+            <Todo item={item} key={item.id}  delete={this.delete}/>
           ))}
         </List>
       </Paper>
     )
+    
     // // 2. 자바스크립트가 제공하는 map 함수를 이용한다.
     // var todoItems = this.state.items.map((item, idx)=>(
     //   <Todo item={item} idx={item.id}/>
@@ -50,7 +82,7 @@ class App extends React.Component{
     return (
       <div className="App">
         <Container maxWidth="md">
-          <AddTodo add={this.add}/>
+          <AddTodo add={this.add} />
           <div className="TodoList">{todoItems}</div>
         </Container>
       </div>
