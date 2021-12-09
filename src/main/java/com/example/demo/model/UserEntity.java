@@ -30,7 +30,7 @@ public class UserEntity {
 	private String username;
 	
 	@Column(nullable = false)
-	private String email; // id와 같은 기능
+	private String email; // 아이디와 같은 기능
 	
 	@Column(nullable = false)
 	private String password; // 패스워드 
