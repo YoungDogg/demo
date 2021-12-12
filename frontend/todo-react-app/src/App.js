@@ -3,7 +3,7 @@ import Todo from './Todo';
 import AddTodo from "./AddTodo.js";
 import { Paper, List, Container} from "@material-ui/core";
 import './App.css';
-import {call} from "./service/ApiService"
+import {call} from "./service/ApiService"; 
 
 class App extends React.Component{
   constructor(props){
