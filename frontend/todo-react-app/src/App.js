@@ -1,9 +1,11 @@
 import React from 'react';
 import Todo from './Todo';
 import AddTodo from "./AddTodo.js";
-import { Paper, List, Container} from "@material-ui/core";
+import { Paper, List, Container, Grid, 
+  Button, AppBar, Toolbar,Typography 
+} from "@material-ui/core";
 import './App.css';
-import {call} from "./service/ApiService"; 
+import {call, signout} from "./service/ApiService"; 
 
 class App extends React.Component{
   constructor(props){
@@ -11,15 +13,20 @@ class App extends React.Component{
     this.state = {
       items: [
         // { id: "0", title : "Hello World 1", done: true},
-        // { id: "1", title : "Hello World 2", done: false},
-      ]  
+        // { id: "1", title : "Hello World 2", done: false}, 
+      ],  
+      // 1. 로딩 중이라는 상태를 표현할 변수 생성자에 상태변수 추가
+      loading: true,
     };
   }
   componentDidMount(){
+    // 2. componentDidMount에서 Todo 리스트를 가져오는 GET 요청이 성공적으로 리턴한다면
+    // loading을 false로 고친다. 로딩이 아니라는 뜻 
     call("/todo", "GET", null).then((response) =>
-      this.setState({ items: response.data})
+      this.setState({ items: response.data, loading:false})
     );
   }
+  // componentDidMount(){
   //   const requestOptions = {
   //     method : "GET",
   //     headers:{ "Content-Type": "application/json"}
@@ -85,8 +92,49 @@ class App extends React.Component{
           ))}
         </List>
       </Paper>
-    )
+    );
     
+    // navigationBar 추가
+    var navigationBar = (
+      <AppBar position='static'>
+        <Toolbar>
+          <Grid justifyContent='space-between' container>
+            <Grid item>
+              <Typography variant='h6'>TODO LIST</Typography>
+            </Grid>
+            <Grid>
+              <Button color="inherit" onClick={signout}>
+                로그아웃
+              </Button>
+            </Grid>
+          </Grid>
+        </Toolbar>
+      </AppBar>
+    )
+
+    // 로딩 중이 아닐 때 렌더링할 부분
+    var todoListPage = (
+      <div>
+        {navigationBar}
+        <Container maxWidth="md">
+          <AddTodo add={this.add}/>
+          <div className="TodoList">{todoItems}</div>
+        </Container>
+      </div>
+    );
+
+    // 로딩 중일 때 렌더링할 부분
+    var loadingPage = <h1>Loading...</h1>;
+
+    var content = loadingPage;
+
+    if(!this.state.loading){
+      // not loading
+      content = todoListPage;
+    }
+
+    return <div className="App">{content}</div>
+     
     // // 2. 자바스크립트가 제공하는 map 함수를 이용한다.
     // var todoItems = this.state.items.map((item, idx)=>(
     //   <Todo item={item} idx={item.id}/>
@@ -99,14 +147,15 @@ class App extends React.Component{
     // );
 
     // return <div className="App">{todoItems}</div>
-    return (
-      <div className="App">
-        <Container maxWidth="md">
-          <AddTodo add={this.add} />
-          <div className="TodoList">{todoItems}</div>
-        </Container>
-      </div>
-    );
+    // return (
+    //   <div className="App">
+    //     {navigationBar} {/* 네이게이션바 렌더링 */} 
+    //     <Container maxWidth="md">
+    //       <AddTodo add={this.add} />
+    //       <div className="TodoList">{todoItems}</div>
+    //     </Container>
+    //   </div>
+    // );
   }
 }
 

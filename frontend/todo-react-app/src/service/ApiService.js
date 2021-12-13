@@ -54,3 +54,8 @@ export function signin(userDTO){
     }
   });
 }
+
+export function signout(userDTO){ 
+  localStorage.setItem(ACCESS_TOKEN, null);
+  window.location.href = "/";
+}
